@@ -21,6 +21,6 @@ function [ image_stack, V ] = load_image_stack(dir_path)
         x1 = str2double(split_f_name(2));
         x2 = str2double(split_f_name(3));
         
-        V(file, :) = [x1, x2];
+        V(file-2, :) = [x1, x2];
     end
 end
