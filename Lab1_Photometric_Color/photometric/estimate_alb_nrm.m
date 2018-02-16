@@ -23,27 +23,19 @@ normal = zeros(h, w, 3);
 
 % =========================================================================
 % YOUR CODE GOES HERE
-[m,n,num_im] = size(image_stack);
+[m, n, n_src] = size(image_stack);
 
 for x= 1:m
     for y= 1:n
-       i = image_stack(x,y,:);
-%        if sum(i) ~= 0
-%            sum(i)
-%        end
-       i = i(:);
-       I = diag(i);
+        i = image_stack(x, y, :);
+        i = i(:);
+        
+        I = diag(i);
        
-      
-      [g,r]  = linsolve(I*scriptV,I*i);
+        [g, ~]  = linsolve(I * scriptV, I * i);
        
-       
-       albedo(x,y) = norm(g);
-       
-       normal(x,y,:) = cat(1,g / norm(g),1);
-       
-      
-
+        albedo(x, y) = norm(g);
+        normal(x, y, :) = cat(1, g / norm(g), 1);
     end 
 end
 
