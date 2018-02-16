@@ -23,33 +23,28 @@ normal = zeros(h, w, 3);
 
 % =========================================================================
 % YOUR CODE GOES HERE
-[m, n, n_src] = size(image_stack);
+[m, n, ~] = size(image_stack);
 
 for x= 1:m
     for y= 1:n
+        %   stack image values into a vector i
         i = image_stack(x, y, :);
         i = i(:);
         
-        I = diag(i);
-       
-        [g, ~]  = linsolve(I * scriptV, I * i);
-       
-        albedo(x, y) = norm(g);
+        if shadow_trick
+            I = diag(i);  % construct the diagonal matrix I
+            [g, ~]  = linsolve(I * scriptV, I * i);
+        else
+            [g, ~]  = linsolve(scriptV, i);
+        end
+        
+        % albedo at this point is |g|
+        albedo(x, y) = norm(g);  
+        
+        % normal at this point is g / |g|
         normal(x, y, :) = cat(1, g / norm(g), 1);
     end 
 end
-
-
-% for each point in the image array
-%   stack image values into a vector i
-%   construct the diagonal matrix scriptI
-%   solve scriptI * scriptV * g = scriptI * i to obtain g for this point
-%   albedo at this point is |g|
-%   normal at this point is g / |g|
-
-
-
-% =========================================================================
 
 end
 
