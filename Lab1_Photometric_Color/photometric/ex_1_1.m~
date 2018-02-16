@@ -1,0 +1,4 @@
+[image_stack_5, V_5] = load_image_stack('photometrics_images/SphereGray5');
+[image_stack_25, V_25] = load_image_stack('photometrics_images/SphereGray25');
+
+figure(1)
