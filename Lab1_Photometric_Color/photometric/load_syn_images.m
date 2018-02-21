@@ -18,20 +18,39 @@ V = 0;
 Z = 0.5;
 
 for i = 1:nfiles
+    % Gray-scale
+    if channel == 1
+        % read input image
+        im = imread(fullfile(image_dir, files(i).name));
+        im = im(:, :, 1);
+        
+        % stack at third dimension
+        if image_stack == 0
+            [h, w] = size(im);
+            fprintf('Image size (HxW): %dx%d\n', h, w);
+            image_stack = zeros(h, w, nfiles, 'uint8');
+            V = zeros(nfiles, 3, 'double');
+        end
 
-    % read input image
-    im = imread(fullfile(image_dir, files(i).name));
-    im = im(:, :, channel);
-    
-    % stack at third dimension
-    if image_stack == 0
-        [h, w] = size(im);
-        fprintf('Image size (HxW): %dx%d\n', h, w);
-        image_stack = zeros(h, w, nfiles, 'uint8');
-        V = zeros(nfiles, 3, 'double');
+        image_stack(:, :, i) = im;
     end
     
-    image_stack(:, :, i) = im;
+    % RGB
+    if channel == 3
+        % read input image
+        im = imread(fullfile(image_dir, files(i).name));
+        im = im(:, :, :);
+
+        % stack at fourth dimension
+        if image_stack == 0
+            [h, w, d] = size(im); % height, width, channels
+            fprintf('Image size (HxW): %dx%dx%d\n', h, w, d);
+            image_stack = zeros(h, w, d, nfiles, 'uint8');
+            V = zeros(nfiles, 3, 'double');
+        end
+  
+        image_stack(:, :, :, i) = im;
+    end
     
     % read light direction from image name
     name = files(i).name(8:end);
@@ -47,7 +66,7 @@ min_val = double(min(image_stack(:)));
 max_val = double(max(image_stack(:)));
 image_stack = (double(image_stack) - min_val) / (max_val - min_val);
 
-normV = sqrt(sum(V.^2, 2));
+normV = sqrt(sum(V .^ 2, 2));
 scriptV = bsxfun(@rdivide, V, normV);
 
 end

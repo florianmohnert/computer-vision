@@ -1,5 +1,5 @@
-[image_stack_5, V_5] = load_image_stack('photometrics_images/SphereGray5');
-[image_stack_25, V_25] = load_image_stack('photometrics_images/SphereGray25');
+[image_stack_5, V_5] = load_syn_images('photometrics_images/SphereGray5', 1);
+[image_stack_25, V_25] = load_syn_images('photometrics_images/SphereGray25', 1);
 
 % =========================================================================
 % With shadow trick

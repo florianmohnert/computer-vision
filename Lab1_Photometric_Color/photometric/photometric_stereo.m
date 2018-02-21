@@ -6,17 +6,34 @@ disp('Part 1: Photometric Stereo')
 
 % obtain many images in a fixed view under different illumination
 disp('Loading images...')
-image_dir = './SphereGray5/';   % TODO: get the path of the script
+% image_dir = 'photometrics_images/SphereGray5/'; 
+% image_dir = 'photometrics_images/SphereGray25/'; 
+% image_dir = 'photometrics_images/MonkeyGray/'; 
+% image_dir = 'photometrics_images/SphereColor/';
+image_dir = 'photometrics_images/MonkeyColor/';
 %image_ext = '*.png';
 
-[image_stack, scriptV] = load_syn_images(image_dir);
-[h, w, n] = size(image_stack);
+% 2nd argument is either 1: gray-scale or 3: rgb
+[image_stack, scriptV] = load_syn_images(image_dir, 3);
+
+if ndims(image_stack) == 3
+    [h, w, n] = size(image_stack);
+elseif ndims(image_stack) == 4
+    [h, w, c, n] = size(image_stack);
+end
 fprintf('Finish loading %d images.\n\n', n);
 
 % compute the surface gradient from the stack of imgs and light source mat
 disp('Computing surface albedo and normal map...')
-[albedo, normals] = estimate_alb_nrm(image_stack, scriptV);
 
+% for mode = ["gray" "3" "1to3"]
+[albedo, normals] = estimate_alb_nrm(image_stack, scriptV, true, '3');
+% n_src = 25;
+% [albedo, normals] = estimate_alb_nrm(image_stack(:, : , 1:n_src), scriptV(1:n_src, :), true);
+
+% surf(normals(:, :, 1), normals(:, :, 2), normals(:, :, 3)) 
+% [U,V,W] = surfnorm(normals(:, :, 3));
+% quiver3(normals(:, :, 3), U, V, W, 0)
 
 %% integrability check: is (dp / dy  -  dq / dx) ^ 2 small everywhere?
 disp('Integrability checking')
@@ -27,19 +44,22 @@ SE(SE <= threshold) = NaN; % for good visualization
 fprintf('Number of outliers: %d\n\n', sum(sum(SE > threshold)));
 
 %% compute the surface height
-height_map = construct_surface( p, q );
+height_map_row = construct_surface(p, q, 'row');
+height_map_col = construct_surface(p, q, 'column');
+height_map_avg = construct_surface(p, q, 'average');
 
 %% Display
 show_results(albedo, normals, SE);
-show_model(albedo, height_map);
-
-
+show_model(albedo, height_map_row);
+show_model(albedo, height_map_col);
+show_model(albedo, height_map_avg);
+ 
 %% Face
-[image_stack, scriptV] = load_face_images('./yaleB02/');
+[image_stack, scriptV] = load_face_images('photometrics_images/yaleB02/');
 [h, w, n] = size(image_stack);
 fprintf('Finish loading %d images.\n\n', n);
 disp('Computing surface albedo and normal map...')
-[albedo, normals] = estimate_alb_nrm(image_stack, scriptV);
+[albedo, normals] = estimate_alb_nrm(image_stack, scriptV, false);
 
 %% integrability check: is (dp / dy  -  dq / dx) ^ 2 small everywhere?
 disp('Integrability checking')
@@ -50,8 +70,12 @@ SE(SE <= threshold) = NaN; % for good visualization
 fprintf('Number of outliers: %d\n\n', sum(sum(SE > threshold)));
 
 %% compute the surface height
-height_map = construct_surface( p, q );
+height_map_row = construct_surface(p, q, 'row');
+height_map_col = construct_surface(p, q, 'column');
+height_map_avg = construct_surface(p, q, 'average'); 
 
-show_results(albedo, normals, SE);
-show_model(albedo, height_map);
-
+% show_results(albedo, normals, SE);
+show_model(albedo, height_map_row);
+show_model(albedo, height_map_col);
+show_model(albedo, height_map_avg);
+ 
