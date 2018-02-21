@@ -22,8 +22,8 @@ switch path_type
         % for each pixel in the left column of height_map
         %   height_value = previous_height_value + corresponding_q_value
         
-        for y=2:h
-            height_map(y,1) = height_map(y-1,1) + q(y,1);
+        for y = 2:h
+            height_map(y,1) = height_map(y-1, 1) + q(y, 1);
         end
         
         % for each row
@@ -32,9 +32,9 @@ switch path_type
         %now that we have the initial values for the leftmost column, populate the
         %rest row by row, each column as a function of the previous plus the delta
         %increase given by the derivative
-        for y=1:h
-            for x=2:w
-                height_map(y,x) = height_map(y,x-1) + p(y,x);
+        for y = 1:h
+            for x = 2:w
+                height_map(y, x) = height_map(y, x-1) + p(y, x);
             end
         end
        
@@ -62,7 +62,7 @@ switch path_type
         
         column_map = construct_surface(p, q, 'column');
         row_map = construct_surface(p, q, 'row');
-        height_map = (column_map + row_map)/2 ;
+        height_map = (column_map + row_map) / 2 ;
 
         % =================================================================
 end

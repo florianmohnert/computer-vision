@@ -7,14 +7,14 @@ disp('Part 1: Photometric Stereo')
 % obtain many images in a fixed view under different illumination
 disp('Loading images...')
 % image_dir = 'photometrics_images/SphereGray5/'; 
-% image_dir = 'photometrics_images/SphereGray25/'; 
+image_dir = 'photometrics_images/SphereGray25/'; 
 % image_dir = 'photometrics_images/MonkeyGray/'; 
 % image_dir = 'photometrics_images/SphereColor/';
-image_dir = 'photometrics_images/MonkeyColor/';
+% image_dir = 'photometrics_images/MonkeyColor/';
 %image_ext = '*.png';
 
 % 2nd argument is either 1: gray-scale or 3: rgb
-[image_stack, scriptV] = load_syn_images(image_dir, 3);
+[image_stack, scriptV] = load_syn_images(image_dir, 1);
 
 if ndims(image_stack) == 3
     [h, w, n] = size(image_stack);
@@ -26,14 +26,16 @@ fprintf('Finish loading %d images.\n\n', n);
 % compute the surface gradient from the stack of imgs and light source mat
 disp('Computing surface albedo and normal map...')
 
-% for mode = ["gray" "3" "1to3"]
-[albedo, normals] = estimate_alb_nrm(image_stack, scriptV, true, '3');
-% n_src = 25;
-% [albedo, normals] = estimate_alb_nrm(image_stack(:, : , 1:n_src), scriptV(1:n_src, :), true);
+% Estimate albedo and normals for grayscale images
+[albedo, normals] = estimate_alb_nrm(image_stack, scriptV, true);
 
-% surf(normals(:, :, 1), normals(:, :, 2), normals(:, :, 3)) 
-% [U,V,W] = surfnorm(normals(:, :, 3));
-% quiver3(normals(:, :, 3), U, V, W, 0)
+% Three methods to estimate albedo and normals for 3-channel images
+% [albedo, normals] = estimate_alb_nrm(image_stack, scriptV, true, '1to3');
+% [albedo, normals] = estimate_alb_nrm(image_stack, scriptV, true, '3');
+% [albedo, normals] = estimate_alb_nrm(image_stack, scriptV, true, 'gray');
+
+% n_src = 10;
+% [albedo, normals] = estimate_alb_nrm(image_stack(:, : , 1:n_src), scriptV(1:n_src, :), false);
 
 %% integrability check: is (dp / dy  -  dq / dx) ^ 2 small everywhere?
 disp('Integrability checking')
@@ -48,7 +50,7 @@ height_map_row = construct_surface(p, q, 'row');
 height_map_col = construct_surface(p, q, 'column');
 height_map_avg = construct_surface(p, q, 'average');
 
-%% Display
+% Display
 show_results(albedo, normals, SE);
 show_model(albedo, height_map_row);
 show_model(albedo, height_map_col);
@@ -78,4 +80,3 @@ height_map_avg = construct_surface(p, q, 'average');
 show_model(albedo, height_map_row);
 show_model(albedo, height_map_col);
 show_model(albedo, height_map_avg);
- 
