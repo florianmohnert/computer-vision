@@ -18,7 +18,6 @@ B = im(:,:,3);
 
 B_m = mean(B(:));
 
-%Avg = mean([R_m,G_m,B_m]);
 
 r = 128/R_m;
 b = 128/B_m;
@@ -32,8 +31,8 @@ awb = uint8(awb);
 
 figure 
 subplot(1,2,1)
+im1 = imshow(im)
 title('original')
-imshow(im)
 subplot(1,2,2)
+im2 = imshow(awb);
 title('color constant')
-imshow(awb)
