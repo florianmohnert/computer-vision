@@ -1,4 +1,6 @@
 %% plots gaussian filter
+im2 = imread('images/image2.jpg');
+imshow(im2);
 
 denoised_gaussian_05 = denoise(im2,'gaussian', 3, 0.5);
 denoised_gaussian_1 = denoise(im2,'gaussian', 5, 1);
@@ -16,7 +18,7 @@ p2 = imshow(denoised_gaussian_2);
 title('11x11 with sigma = 2');
 
 %% PSNR
-myPSNR(im1_original,denoised_gaussian_05)
-myPSNR(im1_original,denoised_gaussian_1)
-myPSNR(im1_original,denoised_gaussian_2)
+myPSNR(im2,denoised_gaussian_05)
+myPSNR(im2,denoised_gaussian_1)
+myPSNR(im2,denoised_gaussian_2)
 
