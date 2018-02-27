@@ -1,9 +1,9 @@
 %% Hyperparameters
-k        = 2;      % number of clusters in k-means algorithm. By default, 
-                   % we consider k to be 2 in foreground-background segmentation task.
-image_id = 'Kobi'; % Identifier to switch between input images.
-                   % Possible ids: 'Kobi',    'Polar', 'Robin-1'
-                   %               'Robin-2', 'Cows'
+k        = 2;        % number of clusters in k-means algorithm. By default, 
+                     % we consider k to be 2 in foreground-background segmentation task.
+image_id = 'Polar';  % Identifier to switch between input images.
+                     % Possible ids: 'Kobi',    'Polar', 'Robin-1'
+                     %               'Robin-2', 'Cows'
 
 % Misc
 err_msg  = 'Image not available.';
@@ -67,12 +67,12 @@ n = floor(log2(lambdaMax/lambdaMin));
 lambdas = 2.^(0:(n-2)) * lambdaMin;
 
 % Define the set of orientations for the Gaussian envelope.
-dTheta      = 2*pi/8;                  % \\ the step size
+dTheta      = pi/4;                  % \\ the step size
 orientations = 0:dTheta:(pi/2);       
 
 % Define the set of sigmas for the Gaussian envelope. Sigma here defines 
 % the standard deviation, or the spread of the Gaussian. 
-sigmas = [1,2]; 
+sigmas = [2, 4, 6]; 
 
 % Now you can create the filterbank. We provide you with a MATLAB struct
 % called gaborFilterBank in which we will hold the filters and their
@@ -90,7 +90,7 @@ for ii = 1:length(lambdas)
             sigma  = sigmas(jj);            
             theta  = orientations(ll);
             psi    = 0;
-            gamma  = 0.5;
+            gamma  = 4;
             
             % Create a Gabor filter with the specs above. 
             % (We also record the settings in which they are created. )
@@ -139,10 +139,10 @@ for jj = 1 : length(gaborFilterBank)
     gabor_im = gabor_pair(:, :, 2);
     
     % filter the grayscale input with real part of the Gabor
-    real_out =  imfilter(img, gabor_re);
+    real_out = imfilter(img_gray, gabor_re);
     
     % filter the grayscale input with imaginary part of the Gabor
-    imag_out = imfilter(img, gabor_im); 
+    imag_out = imfilter(img_gray, gabor_im); 
     
     featureMaps{jj} = cat(3, real_out, imag_out);
     
@@ -159,14 +159,13 @@ for jj = 1 : length(gaborFilterBank)
     end
 end
 
-
 %% Compute the magnitude
 % Now, you will compute the magnitude of the output responses.
 % \\ Hint: (real_part^2 + imaginary_part^2)^(1/2) \\
 featureMags =  cell(length(gaborFilterBank),1);
 for jj = 1:length(featureMaps)
-    real_part = featureMaps{jj}(:,:,1);
-    imag_part = featureMaps{jj}(:,:,2);
+    real_part = double(featureMaps{jj}(:,:,1));
+    imag_part = double(featureMaps{jj}(:,:,2));
     
     % compute the magnitude
     featureMags{jj} = (real_part .^ 2 + imag_part .^ 2) .^ (1/2);
@@ -181,6 +180,7 @@ for jj = 1:length(featureMaps)
     end
 end
 
+disp('Smooth');
 %% Prepare and Preprocess features 
 % You can think of each filter response as a sort of feature representation
 % for the pixels. Now that you have numFilters = |gaborFilterBank| filters, 
@@ -195,8 +195,8 @@ end
 features = zeros(numRows, numCols, length(featureMags));
 if smoothingFlag
     for jj = 1:length(featureMags)
-        % filter the magnitude response with appropriate Gaussian kernels
-        features(:,:,jj) = denoise(featureMags{jj}, 'gaussian', 5, 2);
+        % filter the magnitude response with appropriate Gaussian kernels 
+        features(:,:,jj) = imgaussfilt(featureMags{jj}, gaborFilterBank(jj).sigma);
     end
 else
     % Don't smooth but just insert magnitude images into the matrix
@@ -218,11 +218,14 @@ features = reshape(features, numRows * numCols, []);
 % \\ Hint: see http://ufldl.stanford.edu/wiki/index.php/Data_Preprocessing
 %          for more information. \\
 
+disp('Standardize');
 % subtract mean of each dimension from the corresponding dimension
-features_zero_mean = features - repmat(mean(features), N, 1);
-% divide each dimension by its standard deviation
-features = zero_mean ./ repmat(std(features, 0, 1), N, 1);
+% and divide each dimension by its standard deviation
+stdev = std(features);
+features = bsxfun(@minus, features, mean(features));
+features = bsxfun(@rdivide, features, stdev);
 
+disp('PCA');
 % (Optional) Visualize the saliency map using the first principal component 
 % of the features matrix. It will be useful to diagnose possible problems 
 % with the pipeline and filterbank.  
@@ -232,6 +235,7 @@ figure(4)
 imshow(feature2DImage,[]), title('Pixel representation projected onto first PC')
 
 
+disp('K-means');
 % Apply k-means algorithm to cluster pixels using the data matrix,
 % features. 
 % \\ Hint-1: doc kmeans 
@@ -239,7 +243,7 @@ imshow(feature2DImage,[]), title('Pixel representation projected onto first PC')
 %            MATLAB's built-in kmeans function.
 tic
 % return cluster labels per pixel
-pixLabels = kmeans(features, k);
+pixLabels = kmeans(features, k, 'Replicates', 5);
 ctime = toc;
 fprintf('Clustering completed in %.3f seconds.\n', ctime);
 
