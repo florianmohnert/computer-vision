@@ -1,7 +1,7 @@
 %% Hyperparameters
 k        = 2;        % number of clusters in k-means algorithm. By default, 
                      % we consider k to be 2 in foreground-background segmentation task.
-image_id = 'Polar';  % Identifier to switch between input images.
+image_id = 'SciencePark';  % Identifier to switch between input images.
                      % Possible ids: 'Kobi',    'Polar', 'Robin-1'
                      %               'Robin-2', 'Cows'
 
@@ -65,14 +65,15 @@ lambdaMax = hypot(numRows,numCols);
 % (or the central frequency of the carrier signal, which is 1/lambda)
 n = floor(log2(lambdaMax/lambdaMin));
 lambdas = 2.^(0:(n-2)) * lambdaMin;
+disp(lambdas);
 
 % Define the set of orientations for the Gaussian envelope.
-dTheta      = pi/4;                  % \\ the step size
-orientations = 0:dTheta:(pi/2);       
+dTheta = pi/4;
+orientation = 0:dTheta:(pi/2);      
 
 % Define the set of sigmas for the Gaussian envelope. Sigma here defines 
 % the standard deviation, or the spread of the Gaussian. 
-sigmas = [2, 4, 6]; 
+sigmas = [0.5, 1]; 
 
 % Now you can create the filterbank. We provide you with a MATLAB struct
 % called gaborFilterBank in which we will hold the filters and their
@@ -90,7 +91,7 @@ for ii = 1:length(lambdas)
             sigma  = sigmas(jj);            
             theta  = orientations(ll);
             psi    = 0;
-            gamma  = 4;
+            gamma  = 0.5;
             
             % Create a Gabor filter with the specs above. 
             % (We also record the settings in which they are created. )
@@ -180,7 +181,6 @@ for jj = 1:length(featureMaps)
     end
 end
 
-disp('Smooth');
 %% Prepare and Preprocess features 
 % You can think of each filter response as a sort of feature representation
 % for the pixels. Now that you have numFilters = |gaborFilterBank| filters, 
@@ -191,12 +191,21 @@ disp('Smooth');
 % featureMags. 
 % \\ Hint: For each i in [1, length(featureMags)], smooth featureMags{i}
 %          using an appropriate first order Gaussian kernel.
-% \\ Hint: doc imfilter, doc fspecial or doc imgaussfilt.  
+% \\ Hint: doc imfilter, doc fspecial or doc imgaussfilt. 
+
 features = zeros(numRows, numCols, length(featureMags));
+
 if smoothingFlag
     for jj = 1:length(featureMags)
+        sig = 1 * gaborFilterBank(jj).lambda;
+        K = 3;
         % filter the magnitude response with appropriate Gaussian kernels 
-        features(:,:,jj) = imgaussfilt(featureMags{jj}, gaborFilterBank(jj).sigma);
+        features(:,:,jj) = imgaussfilt(featureMags{jj}, K*sig, 'Padding', 'symmetric');
+        
+        % Alternatively, use a gaussian sigma that is proportional to the gabor
+        % kernels' sigma. We do this for polar, robin-1, robin-2.
+        % features(:,:,jj) = imgaussfilt(featureMags{jj}, K*gaborFilterBank(jj).sigma, 'Padding', 'circular');
+
     end
 else
     % Don't smooth but just insert magnitude images into the matrix
@@ -218,14 +227,12 @@ features = reshape(features, numRows * numCols, []);
 % \\ Hint: see http://ufldl.stanford.edu/wiki/index.php/Data_Preprocessing
 %          for more information. \\
 
-disp('Standardize');
 % subtract mean of each dimension from the corresponding dimension
 % and divide each dimension by its standard deviation
 stdev = std(features);
 features = bsxfun(@minus, features, mean(features));
 features = bsxfun(@rdivide, features, stdev);
 
-disp('PCA');
 % (Optional) Visualize the saliency map using the first principal component 
 % of the features matrix. It will be useful to diagnose possible problems 
 % with the pipeline and filterbank.  
@@ -235,7 +242,6 @@ figure(4)
 imshow(feature2DImage,[]), title('Pixel representation projected onto first PC')
 
 
-disp('K-means');
 % Apply k-means algorithm to cluster pixels using the data matrix,
 % features. 
 % \\ Hint-1: doc kmeans 
@@ -246,7 +252,6 @@ tic
 pixLabels = kmeans(features, k, 'Replicates', 5);
 ctime = toc;
 fprintf('Clustering completed in %.3f seconds.\n', ctime);
-
 
 
 % Visualize the clustering by reshaping pixLabels into original grayscale
@@ -263,8 +268,8 @@ BW = pixLabels == 2;
 BW = repmat(BW,[1 1 3]);
 Aseg1(BW) = img(BW);
 Aseg2(~BW) = img(~BW);
-figure(6)
+figure(6);
+fig_cnt = fig_cnt + 1;
 imshowpair(Aseg1,Aseg2,'montage')
-
 
 
