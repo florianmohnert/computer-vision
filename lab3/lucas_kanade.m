@@ -1,12 +1,16 @@
-clear all;
+function [Vx, Vy] = lucas_kanade(image_pair)
 
-img1 = im2double(rgb2gray(imread('sphere1.ppm')));
-frame2 = imread('sphere2.ppm');
-img2 = im2double(rgb2gray(frame2));
+assert( image_pair == "sphere" | image_pair == "synth");
 
-% img1 = im2double(imread('synth1.pgm'));
-% frame2 = imread('synth2.pgm');
-% img2 = im2double(frame2);
+if image_pair == "sphere"
+    img1 = im2double(rgb2gray(imread('sphere1.ppm')));
+    frame2 = imread('sphere2.ppm');
+    img2 = im2double(rgb2gray(frame2));
+else
+    img1 = im2double(imread('synth1.pgm'));
+    frame2 = imread('synth2.pgm');
+    img2 = im2double(frame2);
+end
 
 assert( all(size(img1) == size(img2)), "The two images must have the same size.")
 [h, w] = size(img1);
@@ -63,3 +67,5 @@ figure();
 imshow(frame2);
 hold on;
 quiver(X, Y, Vx, Vy, 'y')
+
+end
