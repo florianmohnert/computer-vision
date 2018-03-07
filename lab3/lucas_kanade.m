@@ -1,6 +1,6 @@
 function [Vx, Vy] = lucas_kanade(image_pair)
 
-assert( image_pair == "sphere" | image_pair == "synth");
+assert(image_pair == "sphere" | image_pair == "synth");
 
 if image_pair == "sphere"
     img1 = im2double(rgb2gray(imread('sphere1.ppm')));
@@ -32,8 +32,8 @@ regions_2 = mat2cell(img2, row_sizes, col_sizes, 1);
 Vx = zeros(size(regions_1));
 Vy = zeros(size(regions_1));
 
-for j = 1:length(regions_1)
-    for k = 1:length(regions_1)
+for j = 1:size(regions_1, 1)
+    for k = 1:size(regions_1, 2)
         region1 = cell2mat(regions_1(j, k));
         region2 = cell2mat(regions_2(j, k));
         
@@ -58,7 +58,7 @@ start = ceil(region_size(1) / 2);
 offset = start + 1;
 
 % get coordinates for u and v in the original frame
-[X, Y] = meshgrid(8 : h+offset,  8 : w+offset);
+[X, Y] = meshgrid(start : w+offset,  start : h+offset);
 X = X(1 : region_size(1) : end,  1 : region_size(1) : end);
 Y = Y(1 : region_size(2) : end,  1 : region_size(2) : end);
 
