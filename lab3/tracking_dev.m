@@ -17,10 +17,9 @@ for frame = 3:length(frames)
     
     C = corner(img1);
 
-%     imshow(img1);
-%     hold on
-%     plot(C(:,1), C(:,2), 'r*');
-
+    imshow(img1);
+    hold on
+    plot(C(:,1), C(:,2), 'r*');
 
     assert( all(size(img1) == size(img2)), "The two images must have the same size.")
     [h, w] = size(img1);
