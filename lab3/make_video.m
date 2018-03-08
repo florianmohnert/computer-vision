@@ -1,12 +1,12 @@
 function[] = make_video(folder)
 video = VideoWriter('feature_tracking.avi'); %create the video object
+video.FrameRate = 20;
 open(video); %open the file for writing
-number_frames = length(dir(folder));
-filenames = dir([folder +'/*.jpg']);
-for k = 1 : number_frames-2
+
+for k = 3 : length(dir('video_frames'))-1
     disp(k)
-    filename = filenames(k).name;
-    foldername = filenames(k).folder;
+    filename = strcat(num2str(k),'.jpg');
+    foldername = 'video_frames';
     I = imread(strcat(strcat(foldername,'/'),filename));
     writeVideo(video,I); %write the image to file
     

@@ -4,9 +4,12 @@ close all;
 % frames = dir('pingpong');
 frames = dir('person_toy');
 n_frames = length(frames);
-
 image1 = im2double(rgb2gray(imread(strcat(frames(3).folder, '/', frames(3).name))));
-C = corner(imgaussfilt(image1, 2));
+im = imread(strcat(frames(3).folder, '/', frames(3).name));
+[H,r,c] = harris_corner_detector(im,100000,11);
+C = zeros(length(r),2);
+C(:,1) = c;
+C(:,2) = r;
 
 Vx = zeros(n_frames, length(C));
 Vy = zeros(n_frames, length(C));
@@ -84,8 +87,13 @@ for frame = 3:n_frames
     end
 
     % plot optical flow 
-    figure();
+    fig = figure();
     imshow(img2_rgb);
     hold on;
     quiver(C(:, 1), C(:, 2), Vx(frame-1, :)', Vy(frame-1, :)', 'y')
+    
+    folder = 'video_frames';
+    baseFileName = sprintf('%d.jpg', frame);
+    fullFileName = fullfile(folder, baseFileName);
+    saveas(fig,fullFileName, 'jpeg');
 end
