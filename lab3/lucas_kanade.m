@@ -1,4 +1,4 @@
-function [Vx, Vy] = lucas_kanade(img_path1, img_path2, window_size)
+function [Vx, Vy] = lucas_kanade(img_path1, img_path2, window_size, sigma)
 
 frame1 = imread(img_path1);
 frame2 = imread(img_path2);
@@ -41,8 +41,11 @@ for j = 1:size(regions_1, 1)
         [Ix, Iy] = imgradientxy(region1, 'sobel');
         
         % partial derivative of the image with respect to time
-        It = imgaussfilt(region2, 1) - imgaussfilt(region1, 1); 
-%         It = region2 - region1;
+        if sigma == 0
+            It = region2 - region1;
+        else
+            It = imgaussfilt(region2, sigma) - imgaussfilt(region1, sigma);
+        end
         
         % solve for v = inv(A' * A) * A' * b
         A = [Ix(:) Iy(:)]; 
