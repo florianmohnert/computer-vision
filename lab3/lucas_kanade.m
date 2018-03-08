@@ -1,10 +1,18 @@
 function [Vx, Vy] = lucas_kanade(img_path1, img_path2, window_size)
 
-img1 = im2double(rgb2gray(imread(img_path1)));
+frame1 = imread(img_path1);
 frame2 = imread(img_path2);
-img2 = im2double(rgb2gray(frame2));
 
-assert( all(size(img1) == size(img2)), "The two images must have the same size.")
+assert(all(size(frame1) == size(frame2)), "The two images must have the same size.");
+
+if size(frame1, 3) == 3
+    img1 = im2double(rgb2gray(frame1));
+    img2 = im2double(rgb2gray(frame2));
+else
+    img1 = im2double(frame1);
+    img2 = im2double(frame2);
+end
+
 [h, w] = size(img1);
 
 
@@ -33,7 +41,8 @@ for j = 1:size(regions_1, 1)
         [Ix, Iy] = imgradientxy(region1, 'sobel');
         
         % partial derivative of the image with respect to time
-        It = imgaussfilt(region2, 2) - imgaussfilt(region1, 2); 
+        It = imgaussfilt(region2, 1) - imgaussfilt(region1, 1); 
+%         It = region2 - region1;
         
         % solve for v = inv(A' * A) * A' * b
         A = [Ix(:) Iy(:)]; 
