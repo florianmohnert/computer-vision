@@ -1,23 +1,15 @@
-function [Vx, Vy] = lucas_kanade(image_pair)
+function [Vx, Vy] = lucas_kanade(img_path1, img_path2, window_size)
 
-assert(image_pair == "sphere" | image_pair == "synth");
-
-if image_pair == "sphere"
-    img1 = im2double(rgb2gray(imread('sphere1.ppm')));
-    frame2 = imread('sphere2.ppm');
-    img2 = im2double(rgb2gray(frame2));
-else
-    img1 = im2double(imread('synth1.pgm'));
-    frame2 = imread('synth2.pgm');
-    img2 = im2double(frame2);
-end
+img1 = im2double(rgb2gray(imread(img_path1)));
+frame2 = imread(img_path2);
+img2 = im2double(rgb2gray(frame2));
 
 assert( all(size(img1) == size(img2)), "The two images must have the same size.")
 [h, w] = size(img1);
 
 
 % Divide input images into non-overlapping regions of size 15x15
-region_size = [15 15];
+region_size = [window_size window_size];
 n_rows = floor(h / region_size(1));
 n_cols = floor(w / region_size(2));
 
@@ -41,11 +33,11 @@ for j = 1:size(regions_1, 1)
         [Ix, Iy] = imgradientxy(region1, 'sobel');
         
         % partial derivative of the image with respect to time
-        It = double(conv2(region1, ones(2), 'same')) - double(conv2(region2, ones(2), 'same')); 
+        It = imgaussfilt(region2, 2) - imgaussfilt(region1, 2); 
         
         % solve for v = inv(A' * A) * A' * b
         A = [Ix(:) Iy(:)]; 
-        b = It(:); 
+        b = -It(:); 
         v = pinv(A) * b;  % pinv(A) = inv(A' * A) * A'
         
         Vx(j, k) = v(1);
