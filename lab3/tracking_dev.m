@@ -6,6 +6,7 @@ frames = dir('person_toy');
 n_frames = length(frames);
 image1 = im2double(rgb2gray(imread(strcat(frames(3).folder, '/', frames(3).name))));
 im = imread(strcat(frames(3).folder, '/', frames(3).name));
+
 [H,r,c] = harris_corner_detector(im,100000,11);
 C = zeros(length(r),2);
 C(:,1) = c;
@@ -15,7 +16,7 @@ Vx = zeros(n_frames, length(C));
 Vy = zeros(n_frames, length(C));
 region_size = [15 15];
 
-for frame = 3:n_frames
+for frame = 3:n_frames-1
     
     f1_name = frames(frame).name;
     f2_name = frames(frame + 1).name;
@@ -24,10 +25,9 @@ for frame = 3:n_frames
     img2_rgb = imread(strcat(frames(frame).folder, '/', f2_name));
     img2 = im2double(rgb2gray(img2_rgb));
   
-%     img1 = imresize(img1, 0.5);
-%     img2 = imresize(img2, 0.5);
-%     img2_rgb = imresize(img2_rgb, 0.5);
-
+    img1 = imgaussfilt(img1, 1);
+    img2 = imgaussfilt(img2, 1);
+    
 %     imshow(img1);
 %     hold on
 %     plot(C(:,1), C(:,2), 'r*');
@@ -57,7 +57,7 @@ for frame = 3:n_frames
 
         region1 = img1(rows, cols);         
         region2 = img2(rows, cols);
-        
+
         % compute image gradient in the x and y direction
         [Ix, Iy] = imgradientxy(region1, 'intermediate');
 
@@ -70,7 +70,7 @@ for frame = 3:n_frames
         b = -It(:); 
         v = pinv(A) * b;  % pinv(A) = inv(A' * A) * A'
         
-        scale = 5;
+        scale = 1;
         threshold = 0.4;
         
         if abs(v(1)) > threshold
@@ -90,10 +90,10 @@ for frame = 3:n_frames
     fig = figure();
     imshow(img2_rgb);
     hold on;
-    quiver(C(:, 1), C(:, 2), Vx(frame-1, :)', Vy(frame-1, :)', 'y')
+    quiver(C(:, 1), C(:, 2), Vx(frame, :)', Vy(frame, :)', 'y')
     
-    folder = 'video_frames';
-    baseFileName = sprintf('%d.jpg', frame);
-    fullFileName = fullfile(folder, baseFileName);
-    saveas(fig,fullFileName, 'jpeg');
+%     folder = 'video_frames';
+%     baseFileName = sprintf('%d.jpg', frame);
+%     fullFileName = fullfile(folder, baseFileName);
+%     saveas(fig,fullFileName, 'jpeg');
 end

@@ -1,4 +1,11 @@
-function [Vx, Vy] = lucas_kanade(img_path1, img_path2, window_size, sigma)
+function [Vx, Vy] = lucas_kanade(img_path1, img_path2, window_size, sigma, visualise)
+%
+% params:
+%   img_path1, img_path2
+%   window_size - the image is divided in square regions of this size 
+%   sigma - the stdev of the gaussian smoothing filter (0 -> no smoothing)
+%   visualise - 'true' to show images with optical flow vectors
+
 
 frame1 = imread(img_path1);
 frame2 = imread(img_path2);
@@ -67,9 +74,11 @@ X = X(1 : region_size(1) : end,  1 : region_size(1) : end);
 Y = Y(1 : region_size(2) : end,  1 : region_size(2) : end);
 
 % plot optical flow 
-figure();
-imshow(frame2);
-hold on;
-quiver(X, Y, Vx, Vy, 'y')
+if visualise
+    figure();
+    imshow(frame2);
+    hold on;
+    quiver(X, Y, Vx, Vy, 'y')
+end
 
 end

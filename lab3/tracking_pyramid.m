@@ -8,29 +8,33 @@ n_frames = length(frames);
 levels = 3;
 
 image1 = im2double(rgb2gray(imread(strcat(frames(3).folder, '/', frames(3).name))));
-    
+
 for level = 1: levels
     image1 = impyramid(image1, 'reduce');
 end
 
-C = corner(imgaussfilt(image1, 2));
+[H,r,c] = harris_corner_detector(im,100000,11);
+C = zeros(length(r),2);
+C(:,1) = c;
+C(:,2) = r;
 
 Vx = zeros(levels, length(C));
 Vy = zeros(levels, length(C));
 region_size = [15 15];
 
-for frame = 3:n_frames
+for frame = 3:n_frames-1
     
     f1_name = frames(frame).name;
     f2_name = frames(frame + 1).name;
-    
-    img1 = im2double(rgb2gray(imread(strcat(frames(frame).folder, '/', f1_name))));
-    img2_rgb = imread(strcat(frames(frame).folder, '/', f2_name));
-    img2 = im2double(rgb2gray(img2_rgb));
+      
+    img1_rgb = imread(strcat(frames(frame).folder, '/', f1_name));
+    img1 = im2double(rgb2gray(img1_rgb));
+    img2 = im2double(rgb2gray(imread(strcat(frames(frame).folder, '/', f2_name))));
+  
+    img1 = imgaussfilt(img1, 1);
+    img2 = imgaussfilt(img2, 1);
   
     [h, w] = size(img1);
-    
-    
     
     img1_pyramid{1}(:,:) = img1;
     img2_pyramid{1}(:,:) = img2;
@@ -39,29 +43,27 @@ for frame = 3:n_frames
         img1_pyramid{level}(:,:) = impyramid(img1_pyramid{level-1}(:,:), 'reduce');
         img2_pyramid{level}(:,:) = impyramid(img2_pyramid{level-1}(:,:), 'reduce');
     end
-
-        
+    
 %     imshow(img1);
 %     hold on
 %     plot(C(:,1), C(:,2), 'r*');
 
     for level = levels: -1 : 1
-    
+        
+        [V_x, V_y] = lucas_kanade(strcat(frames(frame).folder, '/', f1_name), strcat(frames(frame).folder, '/', f2_name), region_size, 0);
+        
         for j = 1:length(C)
             corner_xy = C(j, :);
             c_x = corner_xy(1);
             c_y = corner_xy(2);
 
-            span_rows = floor(region_size(1) / 2);
-            span_cols = floor(region_size(2) / 2);
+            region_row = ceil(c_y / region_size);
+            region_col = ceil(c_x / region_size);
 
-            rows = c_x - span_rows : c_x + span_rows;
-            cols = c_y - span_cols : c_y + span_cols;
-
-            rows(rows < 1) = 1;
-            rows(rows > h) = h;
-            cols(cols < 1) = 1;
-            cols(cols > w) = w;
+            if region_row < 1              region_row = 1;              end %#ok<*SEPEX>
+            if region_row > size(V_x, 1)   region_row = size(V_x, 1);   end
+            if region_col < 1              region_col = 1;              end
+            if region_col > size(V_x, 2)   region_row = size(V_x, 2);   end
 
             region1 = img1_pyramid{level}(rows, cols);         
             region2 = img2_pyramid{level}(rows, cols);
