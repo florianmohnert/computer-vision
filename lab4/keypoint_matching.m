@@ -29,14 +29,11 @@ for i = 1:50
     im1_feat_y = im1_feat(2);
     
     im2_feat_x = im2_feat(1) + 650 ;
-    im2_feat_y = im2_feat(2) + 850 ;
+    im2_feat_y = im2_feat(2) ;
     
-    %if (i ==4)
-    %disp(round(im2_feat_x))
-    %disp(round(im2_feat_y))
-    %end
     
-    plot([im1_feat_x,im2_feat_x],[im1_feat_y,im2_feat_y])
+    
+    plot([im2_feat_x,im1_feat_x],[im2_feat_y,im1_feat_y])
     
 end
 
