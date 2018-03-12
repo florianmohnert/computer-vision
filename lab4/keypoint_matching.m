@@ -1,4 +1,3 @@
-
 function[matches,scores,f1,f2] = keypoint_matching(im1,im2)
 
 
@@ -14,7 +13,7 @@ im2 = single(im2) ;
 figure(1)
 imshowpair(im1, im2, 'montage')
 hold on
-rand_matches = randi(num_matches,1,50);
+rand_matches = randperm(num_matches,50);
 
 for i = 1:50
     
@@ -28,12 +27,15 @@ for i = 1:50
     im1_feat_x = im1_feat(1);
     im1_feat_y = im1_feat(2);
     
-    im2_feat_x = im2_feat(1) + 650 ;
+    im2_feat_x = im2_feat(1) + size(im1,2) ;
     im2_feat_y = im2_feat(2) ;
     
     
     
-    plot([im2_feat_x,im1_feat_x],[im2_feat_y,im1_feat_y])
+    plot1 = plot([im2_feat_x,im1_feat_x],[im2_feat_y,im1_feat_y]);
+    set(plot1,'LineWidth',3);
+    
+    
     
 end
 
