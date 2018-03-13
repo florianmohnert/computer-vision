@@ -29,16 +29,16 @@ for i = 1:num_matches
     im2_feat = f2(:, match_indexes(2));
 
     % coordinates
-    im1_feat_x = im1_feat(1);
-    im1_feat_y = im1_feat(2);
+    im1_x_coord = im1_feat(1);
+    im1_y_coord = im1_feat(2);
 
-    x_coord = im2_feat(1);
-    y_coord = im2_feat(2);
+    im2_x_coord = im2_feat(1);
+    im2_y_coord = im2_feat(2);
 
-    A = [im1_feat_x im1_feat_y 0 0 1 0; 0 0 im1_feat_x im1_feat_y 0 1];
+    A = [im1_x_coord im1_y_coord 0 0 1 0; 0 0 im1_x_coord im1_y_coord 0 1];
 
     A_total = cat(1, A_total, A);
-    b_total = cat(1, b_total, [x_coord y_coord]);
+    b_total = cat(1, b_total, [im2_x_coord im2_y_coord]);
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -68,8 +68,8 @@ for iter = 1:n_iter
         match = matches(:, i);
     
         % features vecs for both points
-        x_coord = f2(1 , match(2));
-        y_coord = f2(2 , match(2));
+        x_coord = f2(1, match(2));
+        y_coord = f2(2, match(2));
         
         offset = floor(radius / 2);
         
