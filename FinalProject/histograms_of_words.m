@@ -42,7 +42,7 @@ for i = 1:num_images
     
     
     % Compute euclidean distance between descriptors and centroids
-    distances = pdist2(descriptors, centroids);
+    distances = pdist2(double(descriptors), centroids);
     [~, winning_centroids] = min(distances, [], 2);
     
     centroid_hist = zeros(vocab_size, 1);
