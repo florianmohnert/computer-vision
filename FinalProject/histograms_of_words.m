@@ -1,35 +1,42 @@
-function[histograms] = histograms_of_words(centroids)
+function [histograms] = histograms_of_words(images, centroids, colorspace, feature_detector)
 
-images_airplanes = load_image_stack('Caltech4/ImageData/airplanes_train',50);
-images_cars = load_image_stack('Caltech4/ImageData/cars_train',50);
-images_faces = load_image_stack('Caltech4/ImageData/faces_train',50);
-images_motorbikes = load_image_stack('Caltech4/ImageData/motorbikes_train',50);
+num_images = length(images);
+vocab_size = size(centroids, 1);
 
-images = [images_airplanes,images_cars, images_faces, images_motorbikes];
+histograms = zeros(num_images, vocab_size);
 
-for i = 1:length(images)
+for i = 1:num_images
     
     im = im2single(cell2mat(images(i)));
     
-    if (colorspace == 'RGB')
-        descriptors = sift3d(im,feature_detector);
+    if ndims(im) == 3
+        if (colorspace == 'RGB')
+            descriptors = sift3d(im, feature_detector);
+        elseif (colorspace == 'rgb')
+            im = RGB2rgb(im);
+            descriptors = sift3d(im, feature_detector);
+        elseif (colorspace == 'opponent')
+            im = rgb2opponent(im);
+            descriptors = sift3d(im, feature_detector);
+        end
         
-    elseif (colorspace == 'rgb')
-        im = RGB2rgb(im);
-        descriptors = sift3d(im,feature_detector);
-        
-    elseif (colorspace == 'opponent')
-        im = rgb2opponent(im);
-        descriptors = sift3d(im,feature_detector);
+    elseif ndims(im) == 2
+        descriptors = sift1d(im, feature_detector);
     end
     
-    centroid_hist = zeros(size(centroids,1),1);
-    for descr_idx=1:size(descriptors,1)
+    centroid_hist = zeros(vocab_size, 1);
+    
+    for descr_idx = 1:size(descriptors, 1)
         max_distance = 0;
         centroid = 0;
-        for centroid_idx= 1: size(centroids,1)
+        
+        for centroid_idx = 1:vocab_size
             
-            dist = pdist(descriptors(cescr_idx),centroids(centroid_idx));
+            % Euclidean distance
+            V = descriptors(descr_idx) - centroids(centroid_idx);
+            dist = sqrt(V * V');
+            
+%             dist = pdist2(descriptors(descr_idx), centroids(centroid_idx));
             
             if dist > max_distance
                 max_distance = dist;
@@ -41,7 +48,7 @@ for i = 1:length(images)
         
     end
     
-    centroid_hist = normc(centroid_hist);
+    histograms(i, :) = normc(centroid_hist);
     
 end
 
