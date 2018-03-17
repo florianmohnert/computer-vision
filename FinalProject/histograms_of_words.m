@@ -33,10 +33,10 @@ for i = 1:num_images
         for centroid_idx = 1:vocab_size
             
             % Euclidean distance
-            V = descriptors(descr_idx) - centroids(centroid_idx);
-            dist = sqrt(V * V');
+%             V = double(descriptors(descr_idx) - centroids(centroid_idx));
+%             dist = sqrt(V * V');
             
-%             dist = pdist2(descriptors(descr_idx), centroids(centroid_idx));
+            dist = pdist2(descriptors(descr_idx), centroids(centroid_idx));
             
             if dist > max_distance
                 max_distance = dist;
