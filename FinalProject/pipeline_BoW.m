@@ -1,9 +1,9 @@
 %% Parameters
 colorspace = 'RGB';
 detector = 'keypoints';
-sample_size = 5;
+sample_size = 3;
 vocab_size = 5;
-train_set_size = 2;
+train_set_size = 3;
 
 
 %% Build the vocabulary
@@ -33,3 +33,36 @@ images_train = [images_airplanes(sample_size+1:end), ...
                ];
 
 [histograms] = histograms_of_words(images_train, centroids, colorspace, detector);
+
+airplanes_train = histograms([1 : train_set_size], :); 
+cars_train = histograms([train_set_size+1 : 2*train_set_size], :); 
+faces_train = histograms([2*train_set_size+1 : 3*train_set_size], :); 
+motorbikes_train = histograms([3*train_set_size+1 : 4*train_set_size], :); 
+
+train_sets = {airplanes_train, cars_train, faces_train, motorbikes_train};
+n_classes = length(train_sets);
+
+classifiers = {};
+for k = 1:n_classes
+   X = [];
+   Y = zeros(n_classes * train_set_size, 1);
+   
+   % Separate data in two classes
+   correct = cell2mat(train_sets(k));
+   wrong = reshape(                                            ...
+                  cell2mat(train_sets(1:end ~= k)),            ...
+                  [train_set_size * (n_classes-1), vocab_size] ...
+           );
+   
+   X = cat(1, X, correct);
+   X = cat(1, X, wrong);
+   Y([1:train_set_size]) = 1;
+
+   
+   % Shuffle
+   rand_indices = randperm(length(X));
+   X = X(rand_indices, :); 
+   Y = Y(rand_indices);
+   
+   classifier{k} = fitcsvm(X, Y);
+end
