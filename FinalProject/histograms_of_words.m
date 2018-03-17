@@ -1,14 +1,29 @@
 function [histograms] = histograms_of_words(images, centroids, colorspace, feature_detector)
+%
+% Args:
+%   images:           a cell array of N images
+%   centroids:        the visual words - a V x F matrix, where V is the 
+%                     vocabulary size and F is the dimensionality of the
+%                     SIFT features (1x128 or 3x128)
+%   colorspace:       "RGB", "rgb", "opponent"
+%   feature_detector: "dense" or "keypoints"
+%
+% Return: an N x V matrix of image histograms. 
 
 num_images = length(images);
 vocab_size = size(centroids, 1);
-
 histograms = zeros(num_images, vocab_size);
 
 for i = 1:num_images
     
+    % extract image from cell array
     im = im2single(cell2mat(images(i)));
     
+    
+    % Obtain K x F matrix of SIFT descriptors
+    % where K = |keypoints|, F = 128 or 3x128
+    
+    % 3-channel image
     if ndims(im) == 3
         if (colorspace == 'RGB')
             descriptors = sift3d(im, feature_detector);
@@ -20,36 +35,25 @@ for i = 1:num_images
             descriptors = sift3d(im, feature_detector);
         end
         
+    % 1-channel (grayscale) image
     elseif ndims(im) == 2
         descriptors = sift1d(im, feature_detector);
     end
     
+    
+    % Compute euclidean distance between descriptors and centroids
+    distances = pdist2(descriptors, centroids);
+    [~, winning_centroids] = min(distances, [], 2);
+    
     centroid_hist = zeros(vocab_size, 1);
     
-    for descr_idx = 1:size(descriptors, 1)
-        max_distance = 0;
-        centroid = 0;
-        
-        for centroid_idx = 1:vocab_size
-            
-            % Euclidean distance
-%             V = double(descriptors(descr_idx) - centroids(centroid_idx));
-%             dist = sqrt(V * V');
-            
-            dist = pdist2(descriptors(descr_idx), centroids(centroid_idx));
-            
-            if dist > max_distance
-                max_distance = dist;
-                centroid = centroid_idx;
-            end
-              
-        end
-        centroid_hist(centroid) = centroid_hist(centroid) + 1;
-        
+    % Add counts of visual words 
+    for k = 1:length(winning_centroids)
+        centroid_hist(winning_centroids(k)) = centroid_hist(winning_centroids(k)) + 1;
     end
     
+    % the normalised histogram for image i
     histograms(i, :) = normc(centroid_hist);
-    
 end
 
 end
