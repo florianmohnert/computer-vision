@@ -26,7 +26,7 @@ for idx = 1:length(random_indices)
     I = imread(strcat(files(random_indices(idx)).folder, '/', f_name));
     
     % TODO: we only load RGB images for now
-    if ndims(I) == 3
+    if ndims(I) == 3 && size(I, 3) == 3
         image_stack{idx} = I;
         img_count = img_count + 1;
     end

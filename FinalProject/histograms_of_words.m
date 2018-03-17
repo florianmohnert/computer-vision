@@ -54,6 +54,7 @@ for i = 1:num_images
     
     % the normalised histogram for image i
     histograms(i, :) = normc(centroid_hist);
+    
 end
 
 end
