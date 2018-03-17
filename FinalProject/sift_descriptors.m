@@ -1,5 +1,5 @@
 
-function[descriptors] = sift_descriptors(images,colorspace,feature_detector)
+function [descriptors] = sift_descriptors(images,colorspace,feature_detector)
 %%%%%%%%%%%%%
 % images: cell of images
 % colorspace: string "RGB","rgb","opponent"
@@ -12,8 +12,6 @@ for i = 1:length(images)
     
     im = im2single(cell2mat(images(i)));
     
-    
-        
     if (colorspace == 'RGB')
         descriptors = sift3d(im,feature_detector);
         
