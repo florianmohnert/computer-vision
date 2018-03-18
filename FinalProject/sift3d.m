@@ -2,9 +2,9 @@ function [descriptors] = sift3d(im, feature_detector)
 
 [f, ~] = vl_sift(rgb2gray(im));
 
-channel1_descriptor = [];
-channel2_descriptor = [];
-channel3_descriptor = [];
+channel1_descriptors = [];
+channel2_descriptors = [];
+channel3_descriptors = [];
 
 for k = 1:size(f, 2)
     feat = f(:,k);
@@ -20,15 +20,14 @@ for k = 1:size(f, 2)
         [f3, channel3_descriptors_point] = vl_dsift(im(:,:,3),'frames', feat);   
     end
     
-    channel1_descriptor = cat(1, channel1_descriptor, channel1_descriptors_point');
-    channel2_descriptor = cat(1, channel2_descriptor, channel2_descriptors_point');
-    channel3_descriptor = cat(1, channel3_descriptor, channel3_descriptors_point');
-    
+    channel1_descriptors = cat(1, channel1_descriptors, channel1_descriptors_point');
+    channel2_descriptors = cat(1, channel2_descriptors, channel2_descriptors_point');
+    channel3_descriptors = cat(1, channel3_descriptors, channel3_descriptors_point');    
 end
 
-descriptors = cat(1, channel1_descriptor', ...
-                     channel2_descriptor', ...
-                     channel3_descriptor'  ...
+descriptors = cat(1, channel1_descriptors', ...
+                     channel2_descriptors', ...
+                     channel3_descriptors'  ...
                  );
 
 end
