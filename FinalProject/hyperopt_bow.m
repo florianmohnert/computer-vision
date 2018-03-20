@@ -1,7 +1,7 @@
 %% Fix parameters
-sample_size = 5;
-train_set_size = 5;
-test_set_size = 10;
+sample_size = 250;
+train_set_size = 50;
+test_set_size = 50;
 n_classes = 4;
 
 
@@ -20,11 +20,6 @@ images_cars = load_image_stack('Caltech4/ImageData/cars_train', sample_size + tr
 images_faces = load_image_stack('Caltech4/ImageData/faces_train', sample_size + train_set_size);
 images_motorbikes = load_image_stack('Caltech4/ImageData/motorbikes_train', sample_size + train_set_size);
 
-% Test set
-images_airplanes = load_image_stack('Caltech4/ImageData/airplanes_test', test_set_size);
-images_cars = load_image_stack('Caltech4/ImageData/cars_test', test_set_size);
-images_faces = load_image_stack('Caltech4/ImageData/faces_test',  test_set_size);
-images_motorbikes = load_image_stack('Caltech4/ImageData/motorbikes_test', test_set_size);
 
 images_vocab_building = [images_airplanes(1:sample_size), ...
     images_cars(1:sample_size),      ...
@@ -37,6 +32,12 @@ images_train = [images_airplanes(sample_size+1:end), ...
     images_faces(sample_size+1:end),     ...
     images_motorbikes(sample_size+1:end) ...
     ];
+
+% Test set
+images_airplanes = load_image_stack('Caltech4/ImageData/airplanes_test', test_set_size);
+images_cars = load_image_stack('Caltech4/ImageData/cars_test', test_set_size);
+images_faces = load_image_stack('Caltech4/ImageData/faces_test',  test_set_size);
+images_motorbikes = load_image_stack('Caltech4/ImageData/motorbikes_test', test_set_size);
 
 images_test = [images_airplanes, images_cars, images_faces, images_motorbikes];
 
