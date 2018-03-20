@@ -21,7 +21,7 @@ for i = 1:num_images
     im_gray = rgb2gray(im);
     
     % Obtain K x F matrix of SIFT descriptors
-    % where K = |keypoints|, F= 3x128
+    % where K = |keypoints|, F = 3x128
     
     % 3-channel image
     if ndims(im) == 3

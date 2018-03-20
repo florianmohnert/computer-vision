@@ -1,6 +1,6 @@
 %% Parameters
 colorspace = 'rgb';
-detector = 'dense';
+detector = 'keypoints';
 sample_size = 3;
 vocab_size = 5;
 train_set_size = 3;
@@ -17,13 +17,13 @@ images_vocab_building = [images_airplanes(1:sample_size), ...
                          images_faces(1:sample_size),     ...
                          images_motorbikes(1:sample_size) ...
                         ];
-disp('1')
+
 descriptors = sift_descriptors(images_vocab_building, colorspace, detector);
 descriptors = normc(double(descriptors));  % normalize descriptors
-disp('2')
+
 [~, centroids] = kmeans(descriptors, vocab_size);
 
-disp('3')
+
 %% Create image features
 
 images_train = [images_airplanes(sample_size+1:end), ...
@@ -41,10 +41,9 @@ motorbikes_train = histograms([3*train_set_size+1 : 4*train_set_size], :);
 
 train_sets = {airplanes_train, cars_train, faces_train, motorbikes_train};
 n_classes = length(train_sets);
-disp('4')
+
 classifiers = {};
 for k = 1:n_classes
-   disp('5')
    X = [];
    Y = zeros(n_classes * train_set_size, 1);
    
