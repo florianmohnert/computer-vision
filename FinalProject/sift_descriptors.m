@@ -11,21 +11,21 @@ descriptors_all = [];
 for i = 1:length(images)
     % extract image from cell array
     im = im2single(cell2mat(images(i)));
-    
-    if (colorspace == 'RGB')
+
+    if (colorspace == "RGB")
         descriptors = sift3d(im, feature_detector);
-   
-    elseif (colorspace == 'rgb')
+
+    elseif (colorspace == "rgb")
         im = RGB2rgb(im);
         descriptors = sift3d(im, feature_detector);
-        
-    elseif (colorspace == 'opponent')
+
+    elseif (colorspace == "opponent")
         im = rgb2opponent(im);
         descriptors = sift3d(im, feature_detector);
-    end   
-    
+    end
+
     descriptors_all = cat(1, descriptors_all, descriptors);
-    
+
 end
 
 end
