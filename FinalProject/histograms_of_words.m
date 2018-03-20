@@ -18,13 +18,14 @@ for i = 1:num_images
     
     % extract image from cell array
     im = im2single(cell2mat(images(i)));
-    im_gray = rgb2gray(im);
     
     % Obtain K x F matrix of SIFT descriptors
     % where K = |keypoints|, F = 3x128
     
     % 3-channel image
     if ndims(im) == 3
+        im_gray = rgb2gray(im);
+        
         if (colorspace == "RGB")
             descriptors = sift3d(im_gray,im, feature_detector);
         elseif (colorspace == "rgb")

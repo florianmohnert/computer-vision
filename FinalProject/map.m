@@ -1,19 +1,9 @@
-function[maps] = map(classifiers, centroids, colorspace, detector)
+function[maps] = map(images_test, test_set_size, classifiers, centroids, colorspace, detector)
 %%%%%%%%%%%%%%%%%%%%%%%
 % classifiers: 4 trained classifiers
 % test_data: test_data 
 % Returns array of map for all classifiers
 %%%%%%%%%%%%%%%%%%%%%%%
-
-test_set_size = 50;
-n_test_sets = 4;
-
-images_airplanes = load_image_stack('Caltech4/ImageData/airplanes_test', test_set_size);
-images_cars = load_image_stack('Caltech4/ImageData/cars_test', test_set_size);
-images_faces = load_image_stack('Caltech4/ImageData/faces_test',  test_set_size);
-images_motorbikes = load_image_stack('Caltech4/ImageData/motorbikes_test', test_set_size);
-
-images_test = [images_airplanes, images_cars,images_faces,images_motorbikes];
 
 [histograms] = histograms_of_words(images_test, centroids, colorspace, detector);
 
@@ -27,7 +17,7 @@ n_classes = length(test_sets);
 maps = {};
 
 for svm_idx = 1:length(classifiers)
-    labels = zeros(test_set_size*n_test_sets, 1);
+    labels = zeros(test_set_size*n_classes, 1);
     scores = {};
     pred_labels = {};
     
