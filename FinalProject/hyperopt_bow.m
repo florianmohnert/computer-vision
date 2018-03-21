@@ -20,7 +20,6 @@ images_cars = load_image_stack('Caltech4/ImageData/cars_train', sample_size + tr
 images_faces = load_image_stack('Caltech4/ImageData/faces_train', sample_size + train_set_size);
 images_motorbikes = load_image_stack('Caltech4/ImageData/motorbikes_train', sample_size + train_set_size);
 
-
 images_vocab_building = [images_airplanes(1:sample_size), ...
     images_cars(1:sample_size),      ...
     images_faces(1:sample_size),     ...
@@ -57,12 +56,12 @@ for detector_idx = 1:length(detector_types)
             continue;
         end
         
-        for vocab_size_idx = 1:length(vocab_sizes)
-            vocab_size = vocab_sizes(vocab_size_idx);
-            
-            for kernel_idx = 1:length(kernels)
+        for kernel_idx = 1:length(kernels)
                 kernel = cell2mat(kernels(kernel_idx));
                 
+            for vocab_size_idx = 1:length(vocab_sizes)
+                vocab_size = vocab_sizes(vocab_size_idx);
+           
                 t = cputime;
                
                 settings{setting_idx} = {detector, colorspace, vocab_size, kernel};

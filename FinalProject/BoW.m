@@ -6,11 +6,16 @@ function [map_values] = BoW(images_vocab_building, images_train, ...
 descriptors = sift_descriptors(images_vocab_building, colorspace, detector);
 descriptors = normc(double(descriptors));  % normalize descriptors
 
+t = cputime();
 [~, centroids] = kmeans(descriptors, vocab_size);
-
+disp('k-means');
+disp(cputime() - t);
 
 % Create image features
+t = cputime();
 [histograms] = histograms_of_words(images_train, centroids, colorspace, detector);
+disp('create features (histograms)');
+disp(cputime() - t);
 
 airplanes_train = histograms([1 : train_set_size], :); 
 cars_train = histograms([train_set_size+1 : 2*train_set_size], :); 
@@ -21,7 +26,9 @@ train_sets = {airplanes_train, cars_train, faces_train, motorbikes_train};
 n_classes = length(train_sets);
 
 classifiers = {};
+
 for k = 1:n_classes
+   t = cputime();
    X = [];
    Y = zeros(n_classes * train_set_size, 1);
    
@@ -42,6 +49,8 @@ for k = 1:n_classes
    Y = Y(rand_indices);
    
    classifiers{k} = fitcsvm(X, Y, 'KernelFunction', kernel);
+   disp('classifier');
+   disp(cputime() - t);
 end
 
 map_values = map(images_test, test_set_size, classifiers, centroids, colorspace, detector);

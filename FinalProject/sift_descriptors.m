@@ -7,8 +7,13 @@ function [descriptors_all] = sift_descriptors(images, colorspace, feature_detect
 %%%%%%%%%%%%%
 
 descriptors_all = [];
-
+t = cputime();
 for i = 1:length(images)
+    
+    if mod(i, 100) == 0
+        disp(cputime() - t);
+        t = cputime();
+    end
     
     % extract image from cell array
     im = im2single(cell2mat(images(i)));
