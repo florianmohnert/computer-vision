@@ -2,7 +2,6 @@
 
 
 %% fine-tune cnn
-
 [net, info, expdir] = finetune_cnn();
 
 %% extract features and train svm
