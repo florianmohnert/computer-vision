@@ -1,15 +1,15 @@
 %% Fix parameters
-sample_size = 250;
+sample_size = 5;
 train_set_size = 50;
 test_set_size = 50;
 n_classes = 4;
 
 
 %% Hyperparameters
-detector_types = ["keypoints", "dense"];
-colorspace = ["RGB", "rgb", "opponent"];
-vocab_sizes = [400, 800, 1600, 2000, 4000];
+detector_types = ["dense", "keypoints"];
+colorspace = ["rgb", "RGB", "opponent"];
 kernels = {'linear', 'RBF'};
+vocab_sizes = [400, 800, 1600, 2000];
 
 
 %% Image loading
@@ -49,28 +49,31 @@ setting_idx = 1;
 for detector_idx = 1:length(detector_types)
     detector = detector_types(detector_idx);
     
-    for descriptor_idx = 1:length(colorspace)
-        colorspace = colorspace(descriptor_idx);
+    for colorspace_idx = 1:length(colorspace)
+        colorspace = colorspace(colorspace_idx);
         
-        if detector == "dense" && colorspace == "rgb"
-            continue;
-        end
-        
-        for kernel_idx = 1:length(kernels)
+        for vocab_size_idx = 1:length(vocab_sizes)
+            vocab_size = vocab_sizes(vocab_size_idx);
+            
+            
+            descriptors = sift_descriptors(images_vocab_building, colorspace, detector);
+            descriptors = normc(double(descriptors));  % normalize descriptors
+            
+            [~, centroids] = kmeans(descriptors, vocab_size, 'MaxIter', 100, 'Display', 'iter');
+            
+            for kernel_idx = 1:length(kernels)
                 kernel = cell2mat(kernels(kernel_idx));
                 
-            for vocab_size_idx = 1:length(vocab_sizes)
-                vocab_size = vocab_sizes(vocab_size_idx);
-           
                 t = cputime;
-               
+                
                 settings{setting_idx} = {detector, colorspace, vocab_size, kernel};
                 disp(settings{setting_idx});
                 
-                map_values{setting_idx} = BoW(images_vocab_building, images_train, ...
-                                              images_test, colorspace, detector, ...
-                                              vocab_size, train_set_size, ...
-                                              test_set_size, kernel);
+                map_values{setting_idx} = BoW(centroids, images_train, ...
+                    images_test, colorspace, detector, ...
+                    vocab_size, train_set_size, ...
+                    test_set_size, kernel);
+                
                 disp(map_values{setting_idx});
                 disp(mean(cell2mat(map_values{setting_idx})));
                 setting_idx = setting_idx + 1;

@@ -1,15 +1,15 @@
-function [map_values] = BoW(images_vocab_building, images_train, ...
+function [map_values] = BoW(centroids, images_train, ...
                             images_test, colorspace, detector, ...
                             vocab_size, train_set_size, ...
                             test_set_size, kernel)
 
-descriptors = sift_descriptors(images_vocab_building, colorspace, detector);
-descriptors = normc(double(descriptors));  % normalize descriptors
-
-t = cputime();
-[~, centroids] = kmeans(descriptors, vocab_size);
-disp('k-means');
-disp(cputime() - t);
+% descriptors = sift_descriptors(images_vocab_building, colorspace, detector);
+% descriptors = normc(double(descriptors));  % normalize descriptors
+% 
+% t = cputime();
+% [~, centroids] = kmeans(descriptors, vocab_size);
+% disp('k-means');
+% disp(cputime() - t);
 
 % Create image features
 t = cputime();

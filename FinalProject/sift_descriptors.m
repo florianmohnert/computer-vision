@@ -29,6 +29,7 @@ for i = 1:length(images)
             
         elseif (colorspace == "rgb")
             im = RGB2rgb(im);
+            im(isnan(im)) = 0;
             descriptors = sift3d(im_gray, im, feature_detector);
             
         elseif (colorspace == "opponent")
