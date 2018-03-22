@@ -1,13 +1,13 @@
 %% Fix parameters
-sample_size = 5;
+sample_size = 100;
 train_set_size = 50;
 test_set_size = 50;
 n_classes = 4;
 
 
 %% Hyperparameters
-detector_types = ["dense", "keypoints"];
-colorspace = ["rgb", "RGB", "opponent"];
+detector_types = ["keypoints", "dense"];
+colorspaces = ["rgb", "RGB", "opponent"];
 kernels = {'linear', 'RBF'};
 vocab_sizes = [400, 800, 1600, 2000];
 
@@ -49,8 +49,8 @@ setting_idx = 1;
 for detector_idx = 1:length(detector_types)
     detector = detector_types(detector_idx);
     
-    for colorspace_idx = 1:length(colorspace)
-        colorspace = colorspace(colorspace_idx);
+    for colorspace_idx = 1:length(colorspaces)
+        colorspace = colorspaces(colorspace_idx);
         
         for vocab_size_idx = 1:length(vocab_sizes)
             vocab_size = vocab_sizes(vocab_size_idx);
