@@ -53,6 +53,6 @@ for k = 1:n_classes
    disp(cputime() - t);
 end
 
-map_values = map(images_test, test_set_size, classifiers, centroids, colorspace, detector);
+map_values = map(images_test, test_set_size, classifiers, centroids, colorspace, detector, vocab_size, kernel);
 
 end

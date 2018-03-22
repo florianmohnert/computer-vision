@@ -1,8 +1,9 @@
-function [image_stack] = load_image_stack(dir_path, n)
+function [image_stack] = load_image_stack(dir_path, n, test)
 %
 % Args:
 %   dir_path: path of image dataset
 %   n:        number of images to load
+%   test:     'true' for testing phase
 %
 % Return: a cell array of n images
 
@@ -11,24 +12,33 @@ n_sources = length(files); % the number of images
 
 image_stack = {};
 
-random_indices = randperm(n_sources);
+if test == true
+    indices = 1:n_sources;
+else
+    indices = randperm(n_sources);
+end
+    
 img_count = 0;
 
-for idx = 1:length(random_indices)
+for idx = 1:n_sources
     
-    f_name = files(random_indices(idx)).name;
+    f_name = files(indices(idx)).name;
     
     % ignore everything but images
     if (length(f_name) < 4) || (f_name(end-3:end) ~= ".jpg")
         continue;
     end
     
-    I = imread(strcat(files(random_indices(idx)).folder, '/', f_name));
+    I = imread(strcat(files(indices(idx)).folder, '/', f_name));
     
-    % TODO: we only load RGB images for now
-    if ndims(I) == 3 && size(I, 3) == 3
+    if test == true
         image_stack{idx} = I;
         img_count = img_count + 1;
+    else
+        if ndims(I) == 3 && size(I, 3) == 3
+            image_stack{idx} = I;
+            img_count = img_count + 1;
+        end
     end
     
     % stop when n images have been loaded

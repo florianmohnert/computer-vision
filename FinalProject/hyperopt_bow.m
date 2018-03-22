@@ -1,24 +1,24 @@
 %% Fix parameters
-sample_size = 100;
+sample_size = 4;
 train_set_size = 50;
 test_set_size = 50;
 n_classes = 4;
 
 
 %% Hyperparameters
-detector_types = ["keypoints", "dense"];
-colorspaces = ["rgb", "RGB", "opponent"];
+detector_types = ["dense", "keypoints"];
+colorspaces = ["RGB", "rgb", "opponent"];
 kernels = {'linear', 'RBF'};
-vocab_sizes = [400, 800, 1600, 2000];
+vocab_sizes = [400, 800, 1600, 2000, 4000];
 
 
 %% Image loading
 
 % Training set
-images_airplanes = load_image_stack('Caltech4/ImageData/airplanes_train', sample_size + train_set_size);
-images_cars = load_image_stack('Caltech4/ImageData/cars_train', sample_size + train_set_size);
-images_faces = load_image_stack('Caltech4/ImageData/faces_train', sample_size + train_set_size);
-images_motorbikes = load_image_stack('Caltech4/ImageData/motorbikes_train', sample_size + train_set_size);
+images_airplanes = load_image_stack('Caltech4/ImageData/airplanes_train', sample_size + train_set_size, false);
+images_cars = load_image_stack('Caltech4/ImageData/cars_train', sample_size + train_set_size, false);
+images_faces = load_image_stack('Caltech4/ImageData/faces_train', sample_size + train_set_size, false);
+images_motorbikes = load_image_stack('Caltech4/ImageData/motorbikes_train', sample_size + train_set_size, false);
 
 images_vocab_building = [images_airplanes(1:sample_size), ...
     images_cars(1:sample_size),      ...
@@ -33,13 +33,15 @@ images_train = [images_airplanes(sample_size+1:end), ...
     ];
 
 % Test set
-images_airplanes = load_image_stack('Caltech4/ImageData/airplanes_test', test_set_size);
-images_cars = load_image_stack('Caltech4/ImageData/cars_test', test_set_size);
-images_faces = load_image_stack('Caltech4/ImageData/faces_test',  test_set_size);
-images_motorbikes = load_image_stack('Caltech4/ImageData/motorbikes_test', test_set_size);
+images_airplanes = load_image_stack('Caltech4/ImageData/airplanes_test', test_set_size, true);
+images_cars = load_image_stack('Caltech4/ImageData/cars_test', test_set_size, true);
+images_faces = load_image_stack('Caltech4/ImageData/faces_test',  test_set_size, true);
+images_motorbikes = load_image_stack('Caltech4/ImageData/motorbikes_test', test_set_size, true);
 
 images_test = [images_airplanes, images_cars, images_faces, images_motorbikes];
 
+file_out = fopen('html_output.txt', 'w');
+fclose(file_out);
 
 %% Optimisation
 settings = {};
@@ -74,8 +76,8 @@ for detector_idx = 1:length(detector_types)
                     vocab_size, train_set_size, ...
                     test_set_size, kernel);
                 
-                disp(map_values{setting_idx});
-                disp(mean(cell2mat(map_values{setting_idx})));
+%                 disp(map_values{setting_idx});
+%                 disp(mean(cell2mat(map_values{setting_idx})));
                 setting_idx = setting_idx + 1;
                 
                 disp(cputime - t);
