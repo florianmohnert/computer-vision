@@ -1,5 +1,5 @@
 %% Fix parameters
-sample_size = 4;
+sample_size = 100;
 train_set_size = 50;
 test_set_size = 50;
 n_classes = 4;
