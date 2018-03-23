@@ -71,7 +71,7 @@ for svm_idx = 1:length(classifiers)
 end
 
 fprintf(file_out, '%f %f %f %f %f\n', cell2mat(maps), mean(cell2mat(maps)));
-fprintf(file_out, '%d %d %d %d\n', indices_html)
+fprintf(file_out, '%d %d %d %d\n', indices_html);
 
 fclose(file_out);
 end
