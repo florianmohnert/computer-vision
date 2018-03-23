@@ -6,7 +6,7 @@ function [maps] = map(images_test, test_set_size, classifiers, centroids, colors
 %%%%%%%%%%%%%%%%%%%%%%%
 
 [histograms] = histograms_of_words(images_test, centroids, colorspace, detector);
-size(histograms)
+
 
 airplanes_test = histograms([1 : test_set_size], :);
 cars_test = histograms([test_set_size+1 : 2*test_set_size], :);
@@ -31,7 +31,11 @@ for svm_idx = 1:length(classifiers)
     
     other_class_sets = cell2mat(test_sets(1:end ~= svm_idx));
 
-    test_sets_ = {cell2mat(test_sets(svm_idx)), other_class_sets(:,1:400), other_class_sets(:,401:800), other_class_sets(:,801:1200)};
+    test_sets_ = {cell2mat(test_sets(svm_idx)), ...
+                  other_class_sets(:,1:vocab_size), ...
+                  other_class_sets(:,vocab_size+1:2*vocab_size), ...
+                  other_class_sets(:,2*vocab_size+1:3*vocab_size)};
+              
     img_indices_ = cat(2, cell2mat(img_indices(svm_idx)), cell2mat(img_indices(1:end ~= svm_idx)));
     
     for k = 1:length(test_sets)
