@@ -1,4 +1,4 @@
-f_in = open('html_output_dense.txt', 'r')
+f_in = open('html_output.txt', 'r')
 classes = ['airplanes', 'cars', 'faces', 'motorbikes']
 f_out = None
 
@@ -23,8 +23,8 @@ for line in f_in:
         print('<h2>Florian Mohnert, Mario Giulianelli</h2>\n<h1>Settings</h1>\n<table>\n', file=f_out)
 
         if line_as_list[0] == 'keypoints': step_size = '-'
-        else: step_size = '20'
-        print('<tr><th>SIFT step size</th><td>{} px</td></tr>'.format(step_size), file=f_out)
+        else: step_size = '20 px'
+        print('<tr><th>SIFT step size</th><td>{}</td></tr>'.format(step_size), file=f_out)
 
         print('<tr><th>SIFT block sizes</th><td>4 pixels</td></tr>', file=f_out)
         print('<tr><th>SIFT method</th><td>{}-SIFT</td></tr>'.format(colorspace), file=f_out)

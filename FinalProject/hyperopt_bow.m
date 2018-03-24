@@ -6,7 +6,7 @@ n_classes = 4;
 
 
 %% Hyperparameters
-detector_types = ["dense", "keypoints"];
+detector_types = ["keypoints", "dense"];
 colorspaces = ["RGB", "rgb", "opponent"];
 kernels = {'linear', 'RBF'};
 vocab_sizes = [400, 800, 1600, 2000, 4000];
@@ -44,7 +44,6 @@ file_out = fopen('html_output.txt', 'w');
 fclose(file_out);
 
 %% Optimisation
-settings = {};
 map_values = {};
 setting_idx = 1;
 
@@ -56,30 +55,24 @@ for detector_idx = 1:length(detector_types)
         
         for vocab_size_idx = 1:length(vocab_sizes)
             vocab_size = vocab_sizes(vocab_size_idx);
-            
-            
+                  
             descriptors = sift_descriptors(images_vocab_building, colorspace, detector);
-            descriptors = normc(double(descriptors));  % normalize descriptors
+            descriptors = normr(double(descriptors));  % normalize descriptors
             
             [~, centroids] = kmeans(descriptors, vocab_size, 'MaxIter', 100, 'Display', 'iter');
+            centroids = normr(centroids);
             
             for kernel_idx = 1:length(kernels)
                 kernel = cell2mat(kernels(kernel_idx));
                 
+                disp({detector, colorspace, vocab_size, kernel});
                 t = cputime;
-                
-                settings{setting_idx} = {detector, colorspace, vocab_size, kernel};
-                disp(settings{setting_idx});
                 
                 map_values{setting_idx} = BoW(centroids, images_train, ...
                     images_test, colorspace, detector, ...
                     vocab_size, train_set_size, ...
                     test_set_size, kernel);
-                
-%                 disp(map_values{setting_idx});
-%                 disp(mean(cell2mat(map_values{setting_idx})));
-                setting_idx = setting_idx + 1;
-                
+
                 disp(cputime - t);
             end
         end

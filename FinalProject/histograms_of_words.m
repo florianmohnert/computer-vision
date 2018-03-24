@@ -44,19 +44,18 @@ for i = 1:num_images
     
     
     % Compute euclidean distance between descriptors and centroids
-    distances = pdist2(double(descriptors), centroids);
+    distances = pdist2(normr(double(descriptors)), centroids);
     [~, winning_centroids] = min(distances, [], 2);
     
     centroid_hist = zeros(vocab_size, 1);
     
     % Add counts of visual words 
     for k = 1:length(winning_centroids)
-        centroid_hist(winning_centroids(k)) = centroid_hist(winning_centroids(k)) + 1;
+        centroid_hist(winning_centroids(k),:) = centroid_hist(winning_centroids(k),:) + 1;
     end
     
     % the normalised histogram for image i
-    histograms(i, :) = normc(centroid_hist);
-    
+    histograms(i, :) = normc(centroid_hist);  
 end
 
 end
