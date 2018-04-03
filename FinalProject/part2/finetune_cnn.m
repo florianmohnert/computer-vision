@@ -8,7 +8,7 @@ opts.modelType = 'lenet' ;
 [opts, varargin] = vl_argparse(opts, varargin) ;
 
 opts.expDir = fullfile('data', ...
-    sprintf('cnn_assignment-%s', opts.modelType)) ;
+    sprintf('%s-bsz120_ep100', opts.modelType)) ;
 [opts, varargin] = vl_argparse(opts, varargin) ;
 
 opts.dataDir = './data/' ;
@@ -19,8 +19,7 @@ opts.networkType = 'simplenn' ;
 opts.train = struct() ;
 opts = vl_argparse(opts, varargin) ;
 if ~isfield(opts.train, 'gpus'), opts.train.gpus = []; end;
-
-opts.train.gpus = [1];
+% opts.train.gpus = [1];
 
 
 
@@ -34,6 +33,8 @@ else
     mkdir(opts.expDir) ;
     save(opts.imdbPath, '-struct', 'imdb') ;
 end
+
+imdb.images.data = single(imdb.images.data);
 
 %%
 net.meta.classes.name = imdb.meta.classes(:)' ;
@@ -119,7 +120,7 @@ for i = 1:length(train_paths)
     img = train_images{i};
     
     % if image is grayscale image, replicate channel 3 times
-    if size(img, 3) == 1 
+    if size(img, 3) == 1
         img = repmat(img, 1, 1, 3);
     end
     
@@ -147,7 +148,7 @@ for i = 1:length(test_paths)
     img = test_images{i};
     
     % if image is grayscale image, replicate channel 3 times
-    if size(img, 3) == 1 
+    if size(img, 3) == 1
         img = repmat(img, 1, 1, 3);
     end
     
@@ -167,12 +168,13 @@ for i = 1:length(test_paths)
 end
 
 % subtract mean
-dataMean = mean(imdb.images.data(:, :, :, imdb.images.sets == 1), 4);
+dataMean = mean(imdb.images.data(:, :, :, imdb.images.set == 1), 4);
 data = bsxfun(@minus, imdb.images.data, dataMean);
 
-imdb.images.data = data ;
+imdb.images.data = data;
+
 % imdb.images.labels = single(classes);
-imdb.images.set = sets;
+% imdb.images.set = sets;
 imdb.meta.sets = {'train', 'val'} ;
 imdb.meta.classes = classes;
 
