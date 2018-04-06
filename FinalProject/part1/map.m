@@ -1,10 +1,19 @@
 function [maps] = map(images_test, test_set_size, classifiers, centroids, colorspace, detector, vocab_size, kernel)
-%%%%%%%%%%%%%%%%%%%%%%%
-% classifiers: 4 trained classifiers
-% test_data: test_data
-% Returns array of map for all classifiers
-%%%%%%%%%%%%%%%%%%%%%%%
-
+%
+% Returns array of average precisions for all classifiers.
+% 
+% Args:
+%   images_test:   a cell of test images
+%   test_set_size: the number of test images
+%   classifiers:   4 trained classifiers
+%   centroids:     the visual words - a V x 384 matrix, where V is the 
+%                  vocabulary size and 384 (= 3*128) is the 
+%                  dimensionality of the SIFT features
+%   colorspace:    "RGB", "rgb", or "opponent"
+%   detector:      "dense" or "keypoints"
+%   vocab_size:    the number of visual code-words
+%   kernel:        "linear" or "RBF"
+%
 [histograms] = histograms_of_words(images_test, centroids, colorspace, detector);
 
 airplanes_test = histograms([1 : test_set_size], :);
@@ -52,7 +61,7 @@ for svm_idx = 1:length(classifiers)
     end
     
     results = [labels'; cell2mat(scores); cell2mat(pred_labels); img_indices_];
-    results = sortrows(results', 2, 'descend')
+    results = sortrows(results', 2, 'descend');
     
     indices_html = cat(2, indices_html, results(:,4));
     

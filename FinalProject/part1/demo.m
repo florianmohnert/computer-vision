@@ -1,4 +1,4 @@
-%% Fix parameters
+%% Fixed parameters
 sample_size = 100;
 train_set_size = 50;
 test_set_size = 50;
@@ -40,6 +40,7 @@ images_motorbikes = load_image_stack('Caltech4/ImageData/motorbikes_test', test_
 
 images_test = [images_airplanes, images_cars, images_faces, images_motorbikes];
 
+% Write classification ranking and average precision to file
 file_out = fopen('html_output.txt', 'w');
 fclose(file_out);
 
@@ -55,11 +56,14 @@ for detector_idx = 1:length(detector_types)
         
         for vocab_size_idx = 1:length(vocab_sizes)
             vocab_size = vocab_sizes(vocab_size_idx);
-                  
-            descriptors = sift_descriptors(images_vocab_building, colorspace, detector);
-            descriptors = normr(double(descriptors));  % normalize descriptors
             
-            [~, centroids] = kmeans(descriptors, vocab_size, 'MaxIter', 100, 'Display', 'iter');
+            % obtain a sample of descriptors to build a vocabulary
+            descriptors = sift_descriptors(images_vocab_building, colorspace, detector);
+            % normalize descriptors
+            descriptors = normr(double(descriptors));  
+            
+            % Find prototypical descriptors, i.e. the visual words
+            [~, centroids] = kmeans(descriptors, vocab_size, 'MaxIter', 100);
             centroids = normr(centroids);
             
             for kernel_idx = 1:length(kernels)
@@ -68,6 +72,7 @@ for detector_idx = 1:length(detector_types)
                 disp({detector, colorspace, vocab_size, kernel});
                 t = cputime;
                 
+                % run Bag-of-Words and compute mean average precision
                 map_values{setting_idx} = BoW(centroids, images_train, ...
                     images_test, colorspace, detector, ...
                     vocab_size, train_set_size, ...

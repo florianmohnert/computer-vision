@@ -8,10 +8,11 @@ function [image_stack] = load_image_stack(dir_path, n, test)
 % Return: a cell array of n images
 
 files = dir(dir_path);
-n_sources = length(files); % the number of images
+n_sources = length(files); % the number of images in the directory
 
 image_stack = {};
 
+% Do not take a random sample for testing  
 if test == true
     indices = 1:n_sources;
 else
@@ -31,6 +32,7 @@ for idx = 1:n_sources
     
     I = imread(strcat(files(indices(idx)).folder, '/', f_name));
     
+    % For vocabulary building, do not consider grayscale images
     if test == true
         image_stack{idx} = I;
         img_count = img_count + 1;

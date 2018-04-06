@@ -1,4 +1,4 @@
-f_in = open('html_output.txt', 'r')
+f_in = open('html/html_output_keypoints.txt', 'r')
 classes = ['airplanes', 'cars', 'faces', 'motorbikes']
 f_out = None
 
