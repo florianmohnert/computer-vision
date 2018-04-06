@@ -12,21 +12,8 @@ nets.fine_tuned.layers{end}.type = 'softmax';
 [nn.accuracy] = get_nn_accuracy(nets.fine_tuned, data);
 [svm.pre_trained.predictions, svm.pre_trained.accuracy] = get_predictions(svm.pre_trained);
 [svm.fine_tuned.predictions, svm.fine_tuned.accuracy] = get_predictions(svm.fine_tuned);
-% 
-% svm.pre_trained.predictions
-% svm.fine_tuned.predictions
-% 
-% svm.pre_trained.accuracy
-% svm.fine_tuned.accuracy
 
 fprintf('\n\n\n\n\n\n\n\n');
-% disp('1')
-% nn.accuracy
-% disp('2')
-% svm.pre_trained.accuracy(1)
-% disp('3')
-% svm.fine_tuned.accuracy(1)
-% disp('4')
 fprintf('CNN: fine_tuned_accuracy: %0.2f, SVM: pre_trained_accuracy: %0.2f, fine_tuned_accuracy: %0.2f\n', nn.accuracy, svm.pre_trained.accuracy(1), svm.fine_tuned.accuracy(1));
 
 end
@@ -54,9 +41,6 @@ accuracy = counter / nnz(data.images.set==2);
 end
 
 function [predictions, accuracy] = get_predictions(data)
-
-% data.trainset.features
-% data.trainset.labels
 
 best = train(data.trainset.labels, data.trainset.features, '-C -s 0');
 model = train(data.trainset.labels, data.trainset.features, sprintf('-c %f -s 0', best(1))); % use the same solver: -s 0

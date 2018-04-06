@@ -1,10 +1,10 @@
 function net = update_model(varargin)
+
 opts.networkType = 'simplenn' ;
 opts = vl_argparse(opts, varargin) ;
 
 
-%% TODO: PLAY WITH THESE PARAMETERTS TO GET A BETTER ACCURACY
-
+% Set learning rate: first element is for weight matrix, second for bias
 lr_prev_layers = [0.0005 0.0005];
 lr_new_layers  = [0.005 0.005];
 
@@ -71,9 +71,11 @@ net.layers{end+1} = struct('type', 'conv', ...
                            'pad', 0) ;
 net.layers{end+1} = struct('type', 'relu') ;
 
-%% TODO: Define the structure here, so that the network outputs 4-class rather than 10 (as in the pretrained network)
-% Block 5
 
+% Define network structure so that the CNN outputs 4 class probabilities 
+% rather than 10 (as in the pretrained network)
+
+% Block 5
 NEW_INPUT_SIZE  = 64;
 NEW_OUTPUT_SIZE = 4;
 

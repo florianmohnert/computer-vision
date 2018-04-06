@@ -1,4 +1,7 @@
 function [files] = read_lines(path, prefix)
+% 
+% Utility function for IO operations.
+%
     f_in = fopen(path);
     files = textscan(f_in, '%s', 'delimiter', '\n'); % read each line
     fclose(f_in);
