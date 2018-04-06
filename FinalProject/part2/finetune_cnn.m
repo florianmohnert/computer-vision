@@ -1,8 +1,7 @@
 function [net, info, expdir] = finetune_cnn(varargin)
 
 %% Define options
-% run(fullfile(fileparts(mfilename('fullpath')), ...
-%     '..', '..', '..', 'matlab', 'vl_setupnn.m')) ;
+% run(fullfile(fileparts(mfilename('fullpath')),  '..', '..', '..', 'matlab', 'vl_setupnn.m')) ;
 
 opts.modelType = 'lenet' ;
 [opts, varargin] = vl_argparse(opts, varargin) ;
@@ -172,9 +171,6 @@ dataMean = mean(imdb.images.data(:, :, :, imdb.images.set == 1), 4);
 data = bsxfun(@minus, imdb.images.data, dataMean);
 
 imdb.images.data = data;
-
-% imdb.images.labels = single(classes);
-% imdb.images.set = sets;
 imdb.meta.sets = {'train', 'val'} ;
 imdb.meta.classes = classes;
 
